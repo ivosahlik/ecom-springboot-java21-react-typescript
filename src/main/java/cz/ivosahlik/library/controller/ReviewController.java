@@ -5,9 +5,9 @@ import cz.ivosahlik.library.requestmodels.ReviewRequest;
 import cz.ivosahlik.library.service.ReviewService;
 import cz.ivosahlik.library.utils.ExtractJWT;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -23,9 +23,9 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @GetMapping("/search/findByBookId?bookId={bookId}")
-    public Review findById(@PathVariable Long bookId) {
-        return reviewService.findById(bookId);
+    @GetMapping("/search/findByBookId")
+    public Page<Review> findById(@RequestParam Long bookId) {
+        return reviewService.findAllReviewByBookId(bookId);
     }
 
     @GetMapping("/secure/user/book")

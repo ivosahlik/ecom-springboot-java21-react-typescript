@@ -4,6 +4,8 @@ import cz.ivosahlik.library.dao.ReviewRepository;
 import cz.ivosahlik.library.entity.Review;
 import cz.ivosahlik.library.requestmodels.ReviewRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,8 +42,8 @@ public class ReviewService {
         return validateReview != null;
     }
 
-    public Review findById(Long bookId) {
-        return reviewRepository.findById(bookId).orElse(null);
+    public Page<Review> findAllReviewByBookId(Long bookId) {
+        return reviewRepository.findByBookId(bookId, Pageable.ofSize(8));
     }
 
 }
