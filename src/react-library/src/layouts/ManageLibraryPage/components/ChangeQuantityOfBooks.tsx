@@ -29,7 +29,7 @@ export const ChangeQuantityOfBooks = () => {
 
             const responseJson = await response.json();
 
-            const responseData = responseJson._embedded.books;
+            const responseData = responseJson.content;
 
             setTotalAmountOfBooks(responseJson.page.totalElements);
             setTotalPages(responseJson.page.totalPages);
@@ -89,7 +89,7 @@ export const ChangeQuantityOfBooks = () => {
                         <h3>Number of results: ({totalAmountOfBooks})</h3>
                     </div>
                     <p>
-                        {indexOfFirstBook + 1} to {lastItem} of {totalAmountOfBooks} items: 
+                        {indexOfFirstBook + 1} to {lastItem} of {totalAmountOfBooks} items:
                     </p>
                     {books.map(book => (
                        <ChangeQuantityOfBook book={book} key={book.id} deleteBook={deleteBook}/>

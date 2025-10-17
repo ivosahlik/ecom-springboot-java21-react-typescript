@@ -19,7 +19,7 @@ export class ReviewService extends ApiService {
     const responseJson = await this.get<any>(endpoint);
 
     // Extract reviews from response
-    const responseData = responseJson._embedded.reviews;
+    const responseData = responseJson.content;
     const loadedReviews: ReviewModel[] = [];
 
     for (const key in responseData) {

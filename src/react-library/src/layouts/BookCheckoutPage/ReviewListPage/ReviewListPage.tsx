@@ -9,7 +9,7 @@ export const ReviewListPage = () => {
     const [reviews, setReviews] = useState<ReviewModel[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [httpError, setHttpError] = useState(null);
-    
+
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);
     const [reviewsPerPage] = useState(5);
@@ -32,7 +32,7 @@ export const ReviewListPage = () => {
 
             const responseJsonReviews = await responseReviews.json();
 
-            const responseData = responseJsonReviews._embedded.reviews;
+            const responseData = responseJsonReviews.content;
 
             setTotalAmountOfReviews(responseJsonReviews.page.totalElements);
             setTotalPages(responseJsonReviews.page.totalPages);
@@ -77,7 +77,7 @@ export const ReviewListPage = () => {
     const indexOfLastReview: number = currentPage * reviewsPerPage;
     const indexOfFirstReview: number = indexOfLastReview - reviewsPerPage;
 
-    let lastItem = reviewsPerPage * currentPage <= totalAmountOfReviews ? 
+    let lastItem = reviewsPerPage * currentPage <= totalAmountOfReviews ?
             reviewsPerPage * currentPage : totalAmountOfReviews;
 
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);

@@ -6,7 +6,7 @@ import { Pagination } from '../../Utils/Pagination';
 import { SpinnerLoading } from '../../Utils/SpinnerLoading';
 
 export const HistoryPage = () => {
-    
+
     const { authState } = useOktaAuth();
     const [isLoadingHistory, setIsLoadingHistory] = useState(true);
     const [httpError, setHttpError] = useState(null);
@@ -34,7 +34,7 @@ export const HistoryPage = () => {
                 }
                 const historyResponseJson = await historyResponse.json();
 
-                setHistories(historyResponseJson._embedded.histories);
+                setHistories(historyResponseJson.content);
                 setTotalPages(historyResponseJson.page.totalPages);
             }
             setIsLoadingHistory(false);
@@ -61,10 +61,10 @@ export const HistoryPage = () => {
     }
 
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
-    
+
     return(
         <div className='mt-2'>
-            {histories.length > 0 ? 
+            {histories.length > 0 ?
             <>
                 <h5>Recent History:</h5>
 
@@ -74,18 +74,18 @@ export const HistoryPage = () => {
                             <div className='row g-0'>
                                 <div className='col-md-2'>
                                     <div className='d-none d-lg-block'>
-                                        {history.img ? 
+                                        {history.img ?
                                             <img src={history.img} width='123' height='196' alt='Book' />
                                             :
-                                            <img src={require('./../../../Images/BooksImages/book-1000.png')} 
+                                            <img src={require('./../../../Images/BooksImages/book-1000.png')}
                                                 width='123' height='196' alt='Default'/>
                                         }
                                     </div>
                                     <div className='d-lg-none d-flex justify-content-center align-items-center'>
-                                        {history.img ? 
+                                        {history.img ?
                                             <img src={history.img} width='123' height='196' alt='Book' />
                                             :
-                                            <img src={require('./../../../Images/BooksImages/book-1000.png')} 
+                                            <img src={require('./../../../Images/BooksImages/book-1000.png')}
                                                 width='123' height='196' alt='Default'/>
                                         }
                                     </div>

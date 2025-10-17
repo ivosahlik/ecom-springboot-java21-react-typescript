@@ -7,13 +7,13 @@ import { SpinnerLoading } from '../../Utils/SpinnerLoading';
 import { AdminMessage } from './AdminMessage';
 
 export const AdminMessages = () => {
-    
+
     const { authState } = useOktaAuth();
 
     // Normal Loading Pieces
     const [isLoadingMessages, setIsLoadingMessages] = useState(true);
     const [httpError, setHttpError] = useState(null);
-    
+
     // Messages endpoint State
     const [messages, setMessages] = useState<MessageModel[]>([]);
     const [messagesPerPage] = useState(5);
@@ -42,7 +42,7 @@ export const AdminMessages = () => {
                 }
                 const messagesResponseJson = await messagesResponse.json();
 
-                setMessages(messagesResponseJson._embedded.messages);
+                setMessages(messagesResponseJson.content);
                 setTotalPages(messagesResponseJson.page.totalPages);
             }
             setIsLoadingMessages(false);
@@ -94,7 +94,7 @@ export const AdminMessages = () => {
 
     return (
         <div className='mt-3'>
-            {messages.length > 0 ? 
+            {messages.length > 0 ?
                 <>
                     <h5>Pending Q/A: </h5>
                     {messages.map(message => (

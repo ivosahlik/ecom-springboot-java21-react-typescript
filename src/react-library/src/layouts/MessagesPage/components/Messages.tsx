@@ -34,11 +34,11 @@ export const Messages = () => {
                     throw new Error('Something went wrong!');
                 }
                 const messagesResponseJson = await messagesResponse.json();
-                setMessages(messagesResponseJson._embedded.messages);
+                setMessages(messagesResponseJson.content);
                 setTotalPages(messagesResponseJson.page.totalPages);
             }
             setIsLoadingMessages(false);
-        } 
+        }
         fetchUserMessages().catch((error: any) => {
             setIsLoadingMessages(false);
             setHttpError(error.messages);
@@ -64,7 +64,7 @@ export const Messages = () => {
 
     return (
         <div className='mt-2'>
-            {messages.length > 0 ? 
+            {messages.length > 0 ?
                 <>
                     <h5>Current Q/A: </h5>
                     {messages.map(message => (
@@ -76,7 +76,7 @@ export const Messages = () => {
                                 <hr/>
                                 <div>
                                     <h5>Response: </h5>
-                                    {message.response && message.adminEmail ? 
+                                    {message.response && message.adminEmail ?
                                         <>
                                             <h6>{message.adminEmail} (admin)</h6>
                                             <p>{message.response}</p>
