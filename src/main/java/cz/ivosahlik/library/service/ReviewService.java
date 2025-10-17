@@ -42,8 +42,8 @@ public class ReviewService {
         return validateReview != null;
     }
 
-    public Page<Review> findAllReviewByBookId(Long bookId) {
-        return reviewRepository.findByBookId(bookId, Pageable.ofSize(8));
+    public Page<Review> findAllReviewByBookId(Long bookId, Pageable pageable) {
+        return reviewRepository.findByBookId(bookId, pageable);
     }
 
 }
