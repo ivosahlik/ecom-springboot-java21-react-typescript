@@ -31,8 +31,8 @@ export const ChangeQuantityOfBooks = () => {
 
             const responseData = responseJson.content;
 
-            setTotalAmountOfBooks(responseJson.page.totalElements);
-            setTotalPages(responseJson.page.totalPages);
+            setTotalAmountOfBooks(responseJson.totalElements);
+            setTotalPages(responseJson.totalPages);
 
             const loadedBooks: BookModel[] = [];
 

@@ -8,6 +8,7 @@ import cz.ivosahlik.library.entity.Checkout;
 import cz.ivosahlik.library.entity.History;
 import cz.ivosahlik.library.responsemodels.ShelfCurrentLoansResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 @Transactional
@@ -32,28 +34,61 @@ public class BookService {
     private final HistoryRepository historyRepository;
 
     public Book checkoutBook (String userEmail, Long bookId) throws Exception {
+        log.debug("BookService: Attempting checkout for book ID {} by user {}", bookId, userEmail);
 
-        Optional<Book> book = bookRepository.findById(bookId);
+        try {
+            if (userEmail == null || userEmail.trim().isEmpty()) {
+                log.error("BookService: User email is null or empty");
+                throw new Exception("User email is required");
+            }
 
-        Checkout validateCheckout = checkoutRepository.findByUserEmailAndBookId(userEmail, bookId);
+            if (bookId == null) {
+                log.error("BookService: Book ID is null");
+                throw new Exception("Book ID is required");
+            }
 
-        if (book.isEmpty() || validateCheckout != null || book.get().getCopiesAvailable() <= 0) {
-            throw new Exception("Book doesn't exist or already checked out by user");
+            Optional<Book> book = bookRepository.findById(bookId);
+            log.debug("BookService: Book found: {}", book.isPresent() ? "Yes" : "No");
+
+            if (book.isEmpty()) {
+                log.error("BookService: Book with ID {} not found", bookId);
+                throw new Exception("Book doesn't exist with ID: " + bookId);
+            }
+
+            Checkout validateCheckout = checkoutRepository.findByUserEmailAndBookId(userEmail, bookId);
+            log.debug("BookService: Book already checked out by user: {}", validateCheckout != null ? "Yes" : "No");
+
+            if (validateCheckout != null) {
+                log.error("BookService: Book already checked out by user");
+                throw new Exception("Book already checked out by user");
+            }
+
+            if (book.get().getCopiesAvailable() <= 0) {
+                log.error("BookService: No copies available for book ID {}", bookId);
+                throw new Exception("No copies available for checkout");
+            }
+
+            // Proceed with checkout
+            log.debug("BookService: Decreasing available copies for book ID {}", bookId);
+            book.get().setCopiesAvailable(book.get().getCopiesAvailable() - 1);
+            Book savedBook = bookRepository.save(book.get());
+
+            log.debug("BookService: Creating checkout record");
+            Checkout checkout = new Checkout(
+                    userEmail,
+                    LocalDate.now().toString(),
+                    LocalDate.now().plusDays(7).toString(),
+                    book.get().getId()
+            );
+
+            Checkout savedCheckout = checkoutRepository.save(checkout);
+            log.debug("BookService: Checkout successfully recorded with ID: {}", savedCheckout.getId());
+
+            return savedBook;
+        } catch (Exception e) {
+            log.error("BookService: Error during checkout: {}", e.getMessage(), e);
+            throw e;
         }
-
-        book.get().setCopiesAvailable(book.get().getCopiesAvailable() - 1);
-        bookRepository.save(book.get());
-
-        Checkout checkout = new Checkout(
-                userEmail,
-                LocalDate.now().toString(),
-                LocalDate.now().plusDays(7).toString(),
-                book.get().getId()
-        );
-
-        checkoutRepository.save(checkout);
-
-        return book.get();
     }
 
     public Boolean checkoutBookByUser(String userEmail, Long bookId) {

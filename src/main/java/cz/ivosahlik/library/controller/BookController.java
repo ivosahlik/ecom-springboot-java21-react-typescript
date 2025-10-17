@@ -5,6 +5,7 @@ import cz.ivosahlik.library.responsemodels.ShelfCurrentLoansResponse;
 import cz.ivosahlik.library.service.BookService;
 import cz.ivosahlik.library.utils.ExtractJWT;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @CrossOrigin("http://localhost:3000")
 @RestController
@@ -42,42 +44,140 @@ public class BookController {
     public List<ShelfCurrentLoansResponse> currentLoans(@RequestHeader(value = "Authorization") String token)
         throws Exception
     {
-        String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
-        return bookService.currentLoans(userEmail);
+        try {
+            log.debug("Current loans request received");
+            String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
+            if (userEmail == null) {
+                log.error("Current loans error: User email not found in token");
+                throw new Exception("User email not found in token");
+            }
+            log.debug("Getting current loans for user: {}", userEmail);
+            return bookService.currentLoans(userEmail);
+        } catch (Exception e) {
+            log.error("Error getting current loans: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     @GetMapping("/secure/currentloans/count")
     public int currentLoansCount(@RequestHeader(value = "Authorization") String token) {
-        String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
-        return bookService.currentLoansCount(userEmail);
+        try {
+            log.debug("Current loans count request received");
+            String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
+            if (userEmail == null) {
+                log.error("Current loans count error: User email not found in token");
+                return 0; // Return 0 instead of throwing exception for this endpoint
+            }
+            log.debug("Getting current loans count for user: {}", userEmail);
+            return bookService.currentLoansCount(userEmail);
+        } catch (Exception e) {
+            log.error("Error getting current loans count: {}", e.getMessage(), e);
+            return 0; // Return 0 on error
+        }
     }
 
     @GetMapping("/secure/ischeckedout/byuser")
     public Boolean checkoutBookByUser(@RequestHeader(value = "Authorization") String token,
                                       @RequestParam Long bookId) {
-        String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
-        return bookService.checkoutBookByUser(userEmail, bookId);
+        try {
+            log.debug("Is book checked out request received for bookId: {}", bookId);
+            String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
+            if (userEmail == null) {
+                log.error("Is book checked out error: User email not found in token");
+                return false; // Return false instead of throwing exception
+            }
+            log.debug("Checking if book {} is checked out by user: {}", bookId, userEmail);
+            return bookService.checkoutBookByUser(userEmail, bookId);
+        } catch (Exception e) {
+            log.error("Error checking if book is checked out: {}", e.getMessage(), e);
+            return false; // Return false on error
+        }
     }
 
     @PutMapping("/secure/checkout")
     public Book checkoutBook (@RequestHeader(value = "Authorization") String token,
                               @RequestParam Long bookId) throws Exception {
-        String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
-        return bookService.checkoutBook(userEmail, bookId);
+        try {
+            log.debug("Checkout request received for bookId: {}", bookId);
+
+            if (token == null || token.isEmpty()) {
+                log.error("Checkout error: Authorization token is missing or empty");
+                throw new Exception("Authorization token is required");
+            }
+
+            String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
+            log.debug("Extracted user email: {}", userEmail);
+
+            if (userEmail == null) {
+                log.error("Checkout error: User email not found in token");
+                throw new Exception("User email not found in token");
+            }
+
+            log.debug("Attempting to checkout book {} for user {}", bookId, userEmail);
+            Book book = bookService.checkoutBook(userEmail, bookId);
+            log.debug("Book checkout successful for bookId: {}", bookId);
+
+            return book;
+        } catch (Exception e) {
+            log.error("Error during book checkout: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     @PutMapping("/secure/return")
     public void returnBook(@RequestHeader(value = "Authorization") String token,
                            @RequestParam Long bookId) throws Exception {
-        String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
-        bookService.returnBook(userEmail, bookId);
+        try {
+            log.debug("Return book request received for bookId: {}", bookId);
+
+            if (token == null || token.isEmpty()) {
+                log.error("Return book error: Authorization token is missing or empty");
+                throw new Exception("Authorization token is required");
+            }
+
+            String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
+            log.debug("Extracted user email: {}", userEmail);
+
+            if (userEmail == null) {
+                log.error("Return book error: User email not found in token");
+                throw new Exception("User email not found in token");
+            }
+
+            log.debug("Attempting to return book {} for user {}", bookId, userEmail);
+            bookService.returnBook(userEmail, bookId);
+            log.debug("Book return successful for bookId: {}", bookId);
+        } catch (Exception e) {
+            log.error("Error during book return: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     @PutMapping("/secure/renew/loan")
     public void renewLoan(@RequestHeader(value = "Authorization") String token,
                           @RequestParam Long bookId) throws Exception {
-        String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
-        bookService.renewLoan(userEmail, bookId);
+        try {
+            log.debug("Renew loan request received for bookId: {}", bookId);
+
+            if (token == null || token.isEmpty()) {
+                log.error("Renew loan error: Authorization token is missing or empty");
+                throw new Exception("Authorization token is required");
+            }
+
+            String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
+            log.debug("Extracted user email: {}", userEmail);
+
+            if (userEmail == null) {
+                log.error("Renew loan error: User email not found in token");
+                throw new Exception("User email not found in token");
+            }
+
+            log.debug("Attempting to renew loan for book {} for user {}", bookId, userEmail);
+            bookService.renewLoan(userEmail, bookId);
+            log.debug("Loan renewal successful for bookId: {}", bookId);
+        } catch (Exception e) {
+            log.error("Error during loan renewal: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
 }

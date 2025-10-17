@@ -1,5 +1,5 @@
-import { useOktaAuth } from '@okta/okta-react';
 import { useEffect, useState } from 'react';
+import { useAuth } from '../../../context/AuthContext';
 import AdminMessageRequest from '../../../models/AdminMessageRequest';
 import MessageModel from '../../../models/MessageModel';
 import { Pagination } from '../../Utils/Pagination';
@@ -8,7 +8,7 @@ import { AdminMessage } from './AdminMessage';
 
 export const AdminMessages = () => {
 
-    const { authState } = useOktaAuth();
+    const { authState } = useAuth();
 
     // Normal Loading Pieces
     const [isLoadingMessages, setIsLoadingMessages] = useState(true);
@@ -27,12 +27,12 @@ export const AdminMessages = () => {
 
     useEffect(() => {
         const fetchUserMessages = async () => {
-            if (authState?.isAuthenticated) {
+            if (authState && authState.isAuthenticated) {
                 const url = `http://localhost:8080/api/messages/search/findByClosed/?closed=false&page=${currentPage - 1}&size=${messagesPerPage}`;
                 const requestOptions = {
                     method: 'GET',
                     headers: {
-                        Authorization: `Bearer ${authState.accessToken?.accessToken}`,
+                        Authorization: `Bearer ${authState.token}`,
                         'Content-Type': 'application/json'
                     }
                 };
@@ -43,7 +43,7 @@ export const AdminMessages = () => {
                 const messagesResponseJson = await messagesResponse.json();
 
                 setMessages(messagesResponseJson.content);
-                setTotalPages(messagesResponseJson.page.totalPages);
+                setTotalPages(messagesResponseJson.totalPages);
             }
             setIsLoadingMessages(false);
         }
@@ -71,12 +71,12 @@ export const AdminMessages = () => {
 
     async function submitResponseToQuestion(id: number, response: string) {
         const url = `http://localhost:8080/api/messages/secure/admin/message`;
-        if (authState && authState?.isAuthenticated && id !== null && response !== '') {
+        if (authState && authState.isAuthenticated && id !== null && response !== '') {
             const messageAdminRequestModel: AdminMessageRequest = new AdminMessageRequest(id, response);
             const requestOptions = {
                 method: 'PUT',
                 headers: {
-                    Authorization: `Bearer ${authState?.accessToken?.accessToken}`,
+                    Authorization: `Bearer ${authState.token}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(messageAdminRequestModel)

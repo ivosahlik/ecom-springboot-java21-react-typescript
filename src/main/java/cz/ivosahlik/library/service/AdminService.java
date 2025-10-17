@@ -6,11 +6,13 @@ import cz.ivosahlik.library.dao.ReviewRepository;
 import cz.ivosahlik.library.entity.Book;
 import cz.ivosahlik.library.requestmodels.AddBookRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 @Transactional
@@ -48,16 +50,36 @@ public class AdminService {
         bookRepository.save(book.get());
     }
 
-    public void postBook(AddBookRequest addBookRequest) {
-        Book book = new Book();
-        book.setTitle(addBookRequest.getTitle());
-        book.setAuthor(addBookRequest.getAuthor());
-        book.setDescription(addBookRequest.getDescription());
-        book.setCopies(addBookRequest.getCopies());
-        book.setCopiesAvailable(addBookRequest.getCopies());
-        book.setCategory(addBookRequest.getCategory());
-        book.setImg(addBookRequest.getImg());
-        bookRepository.save(book);
+    public void postBook(AddBookRequest addBookRequest) throws Exception {
+        try {
+            if (addBookRequest == null) {
+                throw new Exception("Request cannot be null");
+            }
+
+            // Validate book fields
+            if (addBookRequest.getTitle() == null || addBookRequest.getTitle().isEmpty()) {
+                throw new Exception("Book title is required");
+            }
+            if (addBookRequest.getAuthor() == null || addBookRequest.getAuthor().isEmpty()) {
+                throw new Exception("Book author is required");
+            }
+
+            Book book = new Book();
+            book.setTitle(addBookRequest.getTitle());
+            book.setAuthor(addBookRequest.getAuthor());
+            book.setDescription(addBookRequest.getDescription());
+            book.setCopies(addBookRequest.getCopies());
+            book.setCopiesAvailable(addBookRequest.getCopies());
+            book.setCategory(addBookRequest.getCategory());
+            book.setImg(addBookRequest.getImg());
+
+            bookRepository.save(book);
+
+            log.debug("Book added successfully: {}", book.getTitle());
+        } catch (Exception e) {
+            log.error("Error in postBook: {}", e.getMessage());
+            throw e;
+        }
     }
 
     public void deleteBook(Long bookId) throws Exception {

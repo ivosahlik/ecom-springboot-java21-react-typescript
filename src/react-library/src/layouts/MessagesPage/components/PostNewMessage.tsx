@@ -1,10 +1,10 @@
-import { useOktaAuth } from '@okta/okta-react';
 import { useState } from 'react';
+import { useAuth } from '../../../context/AuthContext';
 import MessageModel from '../../../models/MessageModel';
 
 export const PostNewMessage = () => {
 
-    const { authState } = useOktaAuth();
+    const { authState } = useAuth();
     const [title, setTitle] = useState('');
     const [question, setQuestion] = useState('');
     const [displayWarning, setDisplayWarning] = useState(false);
@@ -17,7 +17,7 @@ export const PostNewMessage = () => {
             const requestOptions = {
                 method: 'POST',
                 headers: {
-                    Authorization: `Bearer ${authState?.accessToken?.accessToken}`,
+                    Authorization: `Bearer ${authState.token}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(messageRequestModel)

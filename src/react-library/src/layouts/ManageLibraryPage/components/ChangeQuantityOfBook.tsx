@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import BookModel from "../../../models/BookModel";
-import { useOktaAuth } from '@okta/okta-react';
+import { useAuth } from "../../../context/AuthContext";
 
 export const ChangeQuantityOfBook: React.FC<{ book: BookModel, deleteBook: any }> = (props, key) => {
-    
-    const { authState } = useOktaAuth();
+
+    const { authState } = useAuth();
     const [quantity, setQuantity] = useState<number>(0);
     const [remaining, setRemaining] = useState<number>(0);
 
@@ -21,7 +21,7 @@ export const ChangeQuantityOfBook: React.FC<{ book: BookModel, deleteBook: any }
         const requestOptions = {
             method: 'PUT',
             headers: {
-                Authorization: `Bearer ${authState?.accessToken?.accessToken}`,
+                Authorization: `Bearer ${authState.token}`,
                 'Content-Type': 'application/json'
             }
         };
@@ -39,7 +39,7 @@ export const ChangeQuantityOfBook: React.FC<{ book: BookModel, deleteBook: any }
         const requestOptions = {
             method: 'PUT',
             headers: {
-                Authorization: `Bearer ${authState?.accessToken?.accessToken}`,
+                Authorization: `Bearer ${authState.token}`,
                 'Content-Type': 'application/json'
             }
         };
@@ -57,7 +57,7 @@ export const ChangeQuantityOfBook: React.FC<{ book: BookModel, deleteBook: any }
         const requestOptions = {
             method: 'DELETE',
             headers: {
-                Authorization: `Bearer ${authState?.accessToken?.accessToken}`,
+                Authorization: `Bearer ${authState.token}`,
                 'Content-Type': 'application/json'
             }
         };
@@ -68,7 +68,7 @@ export const ChangeQuantityOfBook: React.FC<{ book: BookModel, deleteBook: any }
         }
         props.deleteBook();
     }
-    
+
     return (
         <div className='card mt-3 shadow p-3 mb-3 bg-body rounded'>
             <div className='row g-0'>
@@ -77,7 +77,7 @@ export const ChangeQuantityOfBook: React.FC<{ book: BookModel, deleteBook: any }
                         {props.book.img ?
                             <img src={props.book.img} width='123' height='196' alt='Book' />
                             :
-                            <img src={require('./../../../Images/BooksImages/book-1000.png')} 
+                            <img src={require('./../../../Images/BooksImages/book-1000.png')}
                                 width='123' height='196' alt='Book' />
                         }
                     </div>
@@ -85,7 +85,7 @@ export const ChangeQuantityOfBook: React.FC<{ book: BookModel, deleteBook: any }
                         {props.book.img ?
                             <img src={props.book.img} width='123' height='196' alt='Book' />
                             :
-                            <img src={require('./../../../Images/BooksImages/book-1000.png')} 
+                            <img src={require('./../../../Images/BooksImages/book-1000.png')}
                                 width='123' height='196' alt='Book' />
                         }
                     </div>

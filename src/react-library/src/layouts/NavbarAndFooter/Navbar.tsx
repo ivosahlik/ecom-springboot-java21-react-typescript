@@ -1,16 +1,16 @@
 import { Link, NavLink } from "react-router-dom";
-import { useOktaAuth } from '@okta/okta-react';
 import { SpinnerLoading } from "../Utils/SpinnerLoading";
+import { useAuth } from "../../context/AuthContext";
 
 export const Navbar = () => {
 
-  const { oktaAuth, authState } = useOktaAuth();
+  const { logout, authState } = useAuth();
 
   if (!authState) {
     return <SpinnerLoading />
   }
 
-  const handleLogout = async () => oktaAuth.signOut();
+  const handleLogout = () => logout();
 
   console.log(authState);
 
@@ -38,7 +38,7 @@ export const Navbar = () => {
                 <NavLink className='nav-link' to='/shelf'>Shelf</NavLink>
               </li>
             }
-            {authState.isAuthenticated && authState.accessToken?.claims?.userType === 'admin' &&
+            {authState.isAuthenticated && authState.role === 'admin' &&
               <li className='nav-item'>
                 <NavLink className='nav-link' to='/admin'>Admin</NavLink>
               </li>

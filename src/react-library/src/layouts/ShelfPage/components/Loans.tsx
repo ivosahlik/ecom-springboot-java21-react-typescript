@@ -1,13 +1,13 @@
-import { useOktaAuth } from '@okta/okta-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../../context/AuthContext';
 import ShelfCurrentLoans from '../../../models/ShelfCurrentLoans';
 import { SpinnerLoading } from '../../Utils/SpinnerLoading';
 import { LoansModal } from './LoansModal';
 
 export const Loans = () => {
-    
-    const { authState } = useOktaAuth();
+
+    const { authState } = useAuth();
     const [httpError, setHttpError] = useState(null);
 
     // Current Loans
@@ -22,7 +22,7 @@ export const Loans = () => {
                 const requestOptions = {
                     method: 'GET',
                     headers: {
-                        Authorization: `Bearer ${authState.accessToken?.accessToken}`,
+                        Authorization: `Bearer ${authState.token}`,
                         'Content-Type': 'application/json'
                     }
                 };
@@ -63,7 +63,7 @@ export const Loans = () => {
         const requestOptions = {
             method: 'PUT',
             headers: {
-                Authorization: `Bearer ${authState?.accessToken?.accessToken}`,
+                Authorization: `Bearer ${authState.token}`,
                 'Content-Type': 'application/json'
             }
         };
@@ -79,7 +79,7 @@ export const Loans = () => {
         const requestOptions = {
             method: 'PUT',
             headers: {
-                Authorization: `Bearer ${authState?.accessToken?.accessToken}`,
+                Authorization: `Bearer ${authState.token}`,
                 'Content-Type': 'application/json'
             }
         };
@@ -90,12 +90,12 @@ export const Loans = () => {
         }
         setCheckout(!checkout);
     }
-    
+
     return (
         <div>
             {/* Desktop */}
             <div className='d-none d-lg-block mt-2'>
-                {shelfCurrentLoans.length > 0 ? 
+                {shelfCurrentLoans.length > 0 ?
                 <>
                     <h5>Current Loans: </h5>
 
@@ -103,10 +103,10 @@ export const Loans = () => {
                         <div key={shelfCurrentLoan.book.id}>
                             <div className='row mt-3 mb-3'>
                                 <div className='col-4 col-md-4 container'>
-                                    {shelfCurrentLoan.book?.img ? 
+                                    {shelfCurrentLoan.book?.img ?
                                         <img src={shelfCurrentLoan.book?.img} width='226' height='349' alt='Book'/>
                                         :
-                                        <img src={require('./../../../Images/BooksImages/book-1000.png')} 
+                                        <img src={require('./../../../Images/BooksImages/book-1000.png')}
                                             width='226' height='349' alt='Book'/>
                                     }
                                 </div>
@@ -114,24 +114,24 @@ export const Loans = () => {
                                     <div className='card-body'>
                                         <div className='mt-3'>
                                             <h4>Loan Options</h4>
-                                            {shelfCurrentLoan.daysLeft > 0 && 
+                                            {shelfCurrentLoan.daysLeft > 0 &&
                                                 <p className='text-secondary'>
                                                     Due in {shelfCurrentLoan.daysLeft} days.
                                                 </p>
                                             }
-                                            {shelfCurrentLoan.daysLeft === 0 && 
+                                            {shelfCurrentLoan.daysLeft === 0 &&
                                                 <p className='text-success'>
                                                     Due Today.
                                                 </p>
                                             }
-                                            {shelfCurrentLoan.daysLeft < 0 && 
+                                            {shelfCurrentLoan.daysLeft < 0 &&
                                                 <p className='text-danger'>
                                                     Past due by {shelfCurrentLoan.daysLeft} days.
                                                 </p>
                                             }
                                             <div className='list-group mt-3'>
-                                                <button className='list-group-item list-group-item-action' 
-                                                    aria-current='true' data-bs-toggle='modal' 
+                                                <button className='list-group-item list-group-item-action'
+                                                    aria-current='true' data-bs-toggle='modal'
                                                     data-bs-target={`#modal${shelfCurrentLoan.book.id}`}>
                                                         Manage Loan
                                                 </button>
@@ -151,7 +151,7 @@ export const Loans = () => {
                                 </div>
                             </div>
                             <hr/>
-                            <LoansModal shelfCurrentLoan={shelfCurrentLoan} mobile={false} returnBook={returnBook} 
+                            <LoansModal shelfCurrentLoan={shelfCurrentLoan} mobile={false} returnBook={returnBook}
                                 renewLoan={renewLoan}/>
                         </div>
                     ))}
@@ -169,17 +169,17 @@ export const Loans = () => {
 
             {/* Mobile */}
             <div className='container d-lg-none mt-2'>
-                {shelfCurrentLoans.length > 0 ? 
+                {shelfCurrentLoans.length > 0 ?
                 <>
                     <h5 className='mb-3'>Current Loans: </h5>
 
                     {shelfCurrentLoans.map(shelfCurrentLoan => (
                         <div key={shelfCurrentLoan.book.id}>
                                 <div className='d-flex justify-content-center align-items-center'>
-                                    {shelfCurrentLoan.book?.img ? 
+                                    {shelfCurrentLoan.book?.img ?
                                         <img src={shelfCurrentLoan.book?.img} width='226' height='349' alt='Book'/>
                                         :
-                                        <img src={require('./../../../Images/BooksImages/book-1000.png')} 
+                                        <img src={require('./../../../Images/BooksImages/book-1000.png')}
                                             width='226' height='349' alt='Book'/>
                                     }
                                 </div>
@@ -187,24 +187,24 @@ export const Loans = () => {
                                     <div className='card-body container'>
                                         <div className='mt-3'>
                                             <h4>Loan Options</h4>
-                                            {shelfCurrentLoan.daysLeft > 0 && 
+                                            {shelfCurrentLoan.daysLeft > 0 &&
                                                 <p className='text-secondary'>
                                                     Due in {shelfCurrentLoan.daysLeft} days.
                                                 </p>
                                             }
-                                            {shelfCurrentLoan.daysLeft === 0 && 
+                                            {shelfCurrentLoan.daysLeft === 0 &&
                                                 <p className='text-success'>
                                                     Due Today.
                                                 </p>
                                             }
-                                            {shelfCurrentLoan.daysLeft < 0 && 
+                                            {shelfCurrentLoan.daysLeft < 0 &&
                                                 <p className='text-danger'>
                                                     Past due by {shelfCurrentLoan.daysLeft} days.
                                                 </p>
                                             }
                                             <div className='list-group mt-3'>
-                                                <button className='list-group-item list-group-item-action' 
-                                                    aria-current='true' data-bs-toggle='modal' 
+                                                <button className='list-group-item list-group-item-action'
+                                                    aria-current='true' data-bs-toggle='modal'
                                                     data-bs-target={`#mobilemodal${shelfCurrentLoan.book.id}`}>
                                                         Manage Loan
                                                 </button>
@@ -222,9 +222,9 @@ export const Loans = () => {
                                         </Link>
                                     </div>
                                 </div>
-                            
+
                             <hr/>
-                            <LoansModal shelfCurrentLoan={shelfCurrentLoan} mobile={true} returnBook={returnBook} 
+                            <LoansModal shelfCurrentLoan={shelfCurrentLoan} mobile={true} returnBook={returnBook}
                                 renewLoan={renewLoan}/>
                         </div>
                     ))}

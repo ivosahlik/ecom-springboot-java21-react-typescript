@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useOktaAuth } from '@okta/okta-react';
+import { useAuth } from '../../../context/AuthContext';
 import MessageModel from '../../../models/MessageModel';
 import { SpinnerLoading } from '../../Utils/SpinnerLoading';
 import { Pagination } from '../../Utils/Pagination';
 
 export const Messages = () => {
 
-    const { authState } = useOktaAuth();
+    const { authState } = useAuth();
     const [isLoadingMessages, setIsLoadingMessages] = useState(true);
     const [httpError, setHttpError] = useState(null);
 
@@ -20,12 +20,12 @@ export const Messages = () => {
 
     useEffect(() => {
         const fetchUserMessages = async () => {
-            if (authState && authState?.isAuthenticated) {
-                const url = `http://localhost:8080/api/messages/search/findByUserEmail/?userEmail=${authState?.accessToken?.claims.sub}&page=${currentPage - 1}&size=${messagesPerPage}`;
+            if (authState && authState.isAuthenticated) {
+                const url = `http://localhost:8080/api/messages/search/findByUserEmail/?userEmail=${authState.username}&page=${currentPage - 1}&size=${messagesPerPage}`;
                 const requestOptions = {
                     method: 'GET',
                     headers: {
-                        Authorization: `Bearer ${authState?.accessToken?.accessToken}`,
+                        Authorization: `Bearer ${authState.token}`,
                         'Content-Type': 'application/json'
                     }
                 };
@@ -35,7 +35,7 @@ export const Messages = () => {
                 }
                 const messagesResponseJson = await messagesResponse.json();
                 setMessages(messagesResponseJson.content);
-                setTotalPages(messagesResponseJson.page.totalPages);
+                setTotalPages(messagesResponseJson.totalPages);
             }
             setIsLoadingMessages(false);
         }

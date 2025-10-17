@@ -5,12 +5,12 @@ import { SpinnerLoading } from "../Utils/SpinnerLoading";
 import { StarsReview } from "../Utils/StarsReview";
 import { CheckoutAndReviewBox } from "./CheckoutAndReviewBox";
 import { LatestReviews } from "./LatestReviews";
-import { useOktaAuth } from "@okta/okta-react";
+import { useAuth } from "../../context/AuthContext";
 import { bookService, reviewService } from "../../services/api";
 
 export const BookCheckoutPage = () => {
 
-    const { authState } = useOktaAuth();
+    const { authState } = useAuth();
 
     const [book, setBook] = useState<BookModel>();
     const [isLoading, setIsLoading] = useState(true);
@@ -80,7 +80,7 @@ export const BookCheckoutPage = () => {
                 if (authState && authState.isAuthenticated) {
                     const hasReviewed = await reviewService.hasUserReviewedBook(
                         bookId,
-                        authState.accessToken?.accessToken || ''
+                        authState.token || ''
                     );
                     setIsReviewLeft(hasReviewed);
                 }
@@ -98,7 +98,7 @@ export const BookCheckoutPage = () => {
             try {
                 if (authState && authState.isAuthenticated) {
                     const loansCount = await bookService.getCurrentLoansCount(
-                        authState.accessToken?.accessToken || ''
+                        authState.token || ''
                     );
                     setCurrentLoansCount(loansCount);
                 }
@@ -117,7 +117,7 @@ export const BookCheckoutPage = () => {
                 if (authState && authState.isAuthenticated) {
                     const isCheckedOutByUser = await bookService.isCheckedOutByUser(
                         bookId,
-                        authState.accessToken?.accessToken || ''
+                        authState.token || ''
                     );
                     setIsCheckedOut(isCheckedOutByUser);
                 }
@@ -152,10 +152,10 @@ export const BookCheckoutPage = () => {
 
     async function checkoutBook() {
         try {
-            if (book?.id && authState?.accessToken?.accessToken) {
+            if (book?.id && authState?.token) {
                 await bookService.checkoutBook(
                     book.id,
-                    authState.accessToken.accessToken
+                    authState.token
                 );
                 setIsCheckedOut(true);
             }
@@ -166,12 +166,12 @@ export const BookCheckoutPage = () => {
 
     async function submitReview(starInput: number, reviewDescription: string) {
         try {
-            if (book?.id && authState?.accessToken?.accessToken) {
+            if (book?.id && authState?.token) {
                 await reviewService.submitReview(
                     starInput,
                     book.id,
                     reviewDescription,
-                    authState.accessToken.accessToken
+                    authState.token
                 );
                 setIsReviewLeft(true);
             }
