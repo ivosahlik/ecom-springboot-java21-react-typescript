@@ -1,9 +1,9 @@
 package cz.ivosahlik.library.controller;
 
+import cz.ivosahlik.library.annotation.CurrentUser;
 import cz.ivosahlik.library.entity.Review;
 import cz.ivosahlik.library.requestmodels.ReviewRequest;
 import cz.ivosahlik.library.service.ReviewService;
-import cz.ivosahlik.library.utils.ExtractJWT;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,10 +32,8 @@ public class ReviewController {
     }
 
     @GetMapping("/secure/user/book")
-    public Boolean reviewBookByUser(@RequestHeader(value="Authorization") String token,
+    public Boolean reviewBookByUser(@CurrentUser String userEmail,
                                     @RequestParam Long bookId) throws Exception {
-        String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
-
         if (userEmail == null) {
             throw new Exception("User email is missing");
         }
@@ -43,9 +41,8 @@ public class ReviewController {
     }
 
     @PostMapping("/secure")
-    public void postReview(@RequestHeader(value="Authorization") String token,
+    public void postReview(@CurrentUser String userEmail,
                            @RequestBody ReviewRequest reviewRequest) throws Exception {
-        String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
         if (userEmail == null) {
             throw new Exception("User email is missing");
         }

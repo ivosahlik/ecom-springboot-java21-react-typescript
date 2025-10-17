@@ -1,9 +1,10 @@
 package cz.ivosahlik.library.controller;
 
+import cz.ivosahlik.library.annotation.CurrentUser;
+import cz.ivosahlik.library.annotation.UserType;
 import cz.ivosahlik.library.entity.Message;
 import cz.ivosahlik.library.requestmodels.AdminQuestionRequest;
 import cz.ivosahlik.library.service.MessagesService;
-import cz.ivosahlik.library.utils.ExtractJWT;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,18 +17,16 @@ public class MessagesController {
     private final MessagesService messagesService;
 
     @PostMapping("/secure/add/message")
-    public void postMessage(@RequestHeader(value="Authorization") String token,
+    public void postMessage(@CurrentUser String userEmail,
                             @RequestBody Message messageRequest) {
-        String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
         messagesService.postMessage(messageRequest, userEmail);
     }
 
     @PutMapping("/secure/admin/message")
-    public void putMessage(@RequestHeader(value="Authorization") String token,
+    public void putMessage(@CurrentUser String userEmail,
+                           @UserType String userType,
                            @RequestBody AdminQuestionRequest adminQuestionRequest) throws Exception {
-        String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
-        String admin = ExtractJWT.payloadJWTExtraction(token, "\"userType\"");
-        if (admin == null || !admin.equals("admin")) {
+        if (userType == null || !userType.equals("admin")) {
             throw new Exception("Administration page only.");
         }
         messagesService.putMessage(adminQuestionRequest, userEmail);

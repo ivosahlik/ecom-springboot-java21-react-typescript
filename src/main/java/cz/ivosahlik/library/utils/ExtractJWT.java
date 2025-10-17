@@ -10,6 +10,12 @@ import java.util.Map;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+/**
+ * @deprecated This class is deprecated and will be removed in future releases.
+ * Use {@link cz.ivosahlik.library.annotation.CurrentUser} and {@link cz.ivosahlik.library.annotation.UserType}
+ * annotations for JWT claim extraction instead.
+ */
+@Deprecated
 public class ExtractJWT {
 
     public static String payloadJWTExtraction(String token, String extraction) {

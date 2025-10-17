@@ -1,8 +1,8 @@
 package cz.ivosahlik.library.controller;
 
+import cz.ivosahlik.library.annotation.UserType;
 import cz.ivosahlik.library.requestmodels.AddBookRequest;
 import cz.ivosahlik.library.service.AdminService;
-import cz.ivosahlik.library.utils.ExtractJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,31 +25,28 @@ public class AdminController {
     private final AdminService adminService;
 
     @PutMapping("/secure/increase/book/quantity")
-    public void increaseBookQuantity(@RequestHeader(value="Authorization") String token,
+    public void increaseBookQuantity(@UserType String userType,
                                      @RequestParam Long bookId) throws Exception {
-        String admin = ExtractJWT.payloadJWTExtraction(token, "\"userType\"");
-        if (admin == null || !admin.equals("admin")) {
+        if (userType == null || !userType.equals("admin")) {
             throw new Exception("Administration page only");
         }
         adminService.increaseBookQuantity(bookId);
     }
 
     @PutMapping("/secure/decrease/book/quantity")
-    public void decreaseBookQuantity(@RequestHeader(value="Authorization") String token,
+    public void decreaseBookQuantity(@UserType String userType,
                                      @RequestParam Long bookId) throws Exception {
-        String admin = ExtractJWT.payloadJWTExtraction(token, "\"userType\"");
-        if (admin == null || !admin.equals("admin")) {
+        if (userType == null || !userType.equals("admin")) {
             throw new Exception("Administration page only");
         }
         adminService.decreaseBookQuantity(bookId);
     }
 
     @PostMapping("/secure/add/book")
-    public void postBook(@RequestHeader(value="Authorization") String token,
+    public void postBook(@UserType String userType,
                          @RequestBody AddBookRequest addBookRequest) throws Exception {
-        String admin = ExtractJWT.payloadJWTExtraction(token, "\"userType\"");
-        if (admin == null || !admin.equals("admin")) {
-            log.error("Token validation failed for admin. UserType: {}", admin);
+        if (userType == null || !userType.equals("admin")) {
+            log.error("Token validation failed for admin. UserType: {}", userType);
             throw new Exception("Administration page only");
         }
         try {
@@ -61,10 +58,9 @@ public class AdminController {
     }
 
     @DeleteMapping("/secure/delete/book")
-    public void deleteBook(@RequestHeader(value="Authorization") String token,
+    public void deleteBook(@UserType String userType,
                            @RequestParam Long bookId) throws Exception {
-        String admin = ExtractJWT.payloadJWTExtraction(token, "\"userType\"");
-        if (admin == null || !admin.equals("admin")) {
+        if (userType == null || !userType.equals("admin")) {
             throw new Exception("Administration page only");
         }
         adminService.deleteBook(bookId);
