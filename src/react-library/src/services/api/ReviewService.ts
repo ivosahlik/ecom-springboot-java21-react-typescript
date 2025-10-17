@@ -4,7 +4,7 @@
  * Handles all API calls related to reviews
  */
 
-import { ApiService, RequestOptions } from './ApiService';
+import { ApiService } from './ApiService';
 import { API_PATHS } from '../../config/env-config';
 import ReviewModel from '../../models/ReviewModel';
 import ReviewRequestModel from '../../models/ReviewRequestModel';

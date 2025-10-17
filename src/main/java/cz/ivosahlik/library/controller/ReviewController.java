@@ -23,6 +23,11 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
+    @GetMapping("/search/findByBookId?bookId={bookId}")
+    public Review findById(@PathVariable Long bookId) {
+        return reviewService.findById(bookId);
+    }
+
     @GetMapping("/secure/user/book")
     public Boolean reviewBookByUser(@RequestHeader(value="Authorization") String token,
                                     @RequestParam Long bookId) throws Exception {
@@ -42,10 +47,5 @@ public class ReviewController {
             throw new Exception("User email is missing");
         }
         reviewService.postReview(userEmail, reviewRequest);
-    }
-
-    @GetMapping("/search/findByBookId?bookId={bookId}")
-    public Review findById(@PathVariable Long bookId) {
-        return reviewService.findById(bookId);
     }
 }

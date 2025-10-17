@@ -71,7 +71,7 @@ export const BookCheckoutPage = () => {
             }
         };
 
-        // fetchBookReviews();
+        fetchBookReviews();
     }, [isReviewLeft]);
 
     useEffect(() => {
