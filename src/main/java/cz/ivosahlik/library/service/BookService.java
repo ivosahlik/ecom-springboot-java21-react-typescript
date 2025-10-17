@@ -87,10 +87,10 @@ public class BookService {
 
                 TimeUnit time = TimeUnit.DAYS;
 
-                long difference_In_Time = time.convert(d1.getTime() - d2.getTime(),
+                long differenceInTime = time.convert(d1.getTime() - d2.getTime(),
                         TimeUnit.MILLISECONDS);
 
-                shelfCurrentLoansResponses.add(new ShelfCurrentLoansResponse(book, (int) difference_In_Time));
+                shelfCurrentLoansResponses.add(new ShelfCurrentLoansResponse(book, (int) differenceInTime));
             }
         }
         return shelfCurrentLoansResponses;
@@ -137,10 +137,11 @@ public class BookService {
         Date d1 = sdFormat.parse(validateCheckout.getReturnDate());
         Date d2 = sdFormat.parse(LocalDate.now().toString());
 
-        if (d1.compareTo(d2) > 0 || d1.compareTo(d2) == 0) {
-            validateCheckout.setReturnDate(LocalDate.now().plusDays(7).toString());
-            checkoutRepository.save(validateCheckout);
+        if (d1.compareTo(d2) <= 0 && d1.compareTo(d2) != 0) {
+            return;
         }
+        validateCheckout.setReturnDate(LocalDate.now().plusDays(7).toString());
+        checkoutRepository.save(validateCheckout);
     }
 
     public Page<Book> findAll(Pageable pageable) {

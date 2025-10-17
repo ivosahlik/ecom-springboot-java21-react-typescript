@@ -3,13 +3,13 @@ package cz.ivosahlik.library.entity;
 import lombok.Data;
 
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @Entity
 @Table(name = "History")
 @Data
 public class History {
-
-    public History(){}
 
     public History(String userEmail, String checkoutDate, String returnedDate, String title,
                    String author, String description, String img) {

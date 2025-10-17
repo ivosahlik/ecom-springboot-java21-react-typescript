@@ -4,7 +4,7 @@
  * Handles all API calls related to books
  */
 
-import { ApiService, RequestOptions } from './ApiService';
+import { ApiService } from './ApiService';
 import { API_PATHS } from '../../config/env-config';
 import BookModel from '../../models/BookModel';
 

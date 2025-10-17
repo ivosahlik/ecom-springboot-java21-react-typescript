@@ -4,13 +4,13 @@ package cz.ivosahlik.library.entity;
 import lombok.Data;
 
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @Entity
 @Table(name = "messages")
 @Data
 public class Message {
-
-    public Message(){}
 
     public Message(String title, String question) {
         this.title = title;

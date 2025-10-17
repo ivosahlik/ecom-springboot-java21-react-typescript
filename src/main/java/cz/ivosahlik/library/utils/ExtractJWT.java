@@ -1,9 +1,13 @@
 package cz.ivosahlik.library.utils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExtractJWT {
 
     public static String payloadJWTExtraction(String token, String extraction) {
@@ -16,7 +20,7 @@ public class ExtractJWT {
         String payload = new String(decoder.decode(chunks[1]));
 
         String[] entries = payload.split(",");
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
 
         for (String entry : entries) {
             String[] keyValue = entry.split(":");
@@ -32,9 +36,9 @@ public class ExtractJWT {
                 map.put(keyValue[0], keyValue[1]);
             }
         }
-        if (map.containsKey(extraction)) {
-            return map.get(extraction);
+        if (!map.containsKey(extraction)) {
+            return null;
         }
-        return null;
+        return map.get(extraction);
     }
 }

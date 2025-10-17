@@ -3,13 +3,13 @@ package cz.ivosahlik.library.entity;
 import lombok.Data;
 
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @Entity
 @Table(name = "checkout")
 @Data
 public class Checkout {
-
-    public Checkout() {}
 
     public Checkout(String userEmail, String checkoutDate, String returnDate, Long bookId) {
         this.userEmail = userEmail;
